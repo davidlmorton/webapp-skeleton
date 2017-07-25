@@ -1,0 +1,11 @@
+celery == 4.0.2
+certifi == 2017.4.17
+flask == 0.12.2
+flask-restful == 0.3.5
+gunicorn == 19.7.1
+psutil == 5.2.2
+python-json-logger == 0.1.5
+pyyaml == 3.12
+redis == 2.10.5
+requests == 2.14.2
+shortuuid == 0.5.0

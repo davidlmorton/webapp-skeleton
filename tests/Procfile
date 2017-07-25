@@ -1,0 +1,2 @@
+web: coverage run webapp/api/wsgi.py
+worker: coverage run $(which celery) worker -n worker.%h.$PORT --pool=eventlet --concurrency 1 -A webapp.implementation.celery_app -Q worker
