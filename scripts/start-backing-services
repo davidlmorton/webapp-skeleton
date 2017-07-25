@@ -1,0 +1,56 @@
+#! /usr/bin/env bash
+set -o errexit
+set -o nounset
+
+if [ -z ${BACKING_SERVICES_NAMESPACE:+x} ]; then
+    echo "%0: env variable BACKING_SERVICES_NAMESPACE must be defined!"
+    exit 1
+else
+    echo "Starting backing services in namespace: ${BACKING_SERVICES_NAMESPACE}"
+fi
+
+if [ -z ${WEBAPP_NAME:+x} ]; then
+    echo "%0: env variable WEBAPP_NAME must be defined!"
+    exit 1
+fi
+
+ENV_FILE=".backing-services-env-${BACKING_SERVICES_NAMESPACE}"
+
+function finish {
+    echo "Cleaning up backing services \"${BACKING_SERVICES_NAMESPACE}-redis\""
+    sudo docker rm -f "${BACKING_SERVICES_NAMESPACE}-redis"
+    rm -f "${ENV_FILE}"
+}
+trap finish EXIT
+
+
+sudo docker run \
+    --detach \
+    -p "9300-9399:6379" \
+    --name "${BACKING_SERVICES_NAMESPACE}-redis" \
+    redis:3.2
+
+
+echo "Waiting for backing services to become ready..."
+# NOTE: You should NOT continue until the backing services are fully up and
+# ready to be interacted with.  The sleep here stands in for proper checks.
+sleep 5
+
+
+REDIS_PORT=$(sudo docker port "${BACKING_SERVICES_NAMESPACE}-redis" 6379 | cut -d: -f2)
+CELERY_BROKER_URL="redis://localhost:${REDIS_PORT}"
+export ${WEBAPP_NAME}_CELERY_BROKER_URL=${CELERY_BROKER_URL}
+echo "export ${WEBAPP_NAME}_CELERY_BROKER_URL=${CELERY_BROKER_URL}" > "${ENV_FILE}"
+
+CELERY_RESULT_BACKEND=${CELERY_BROKER_URL}
+export ${WEBAPP_NAME}_CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+echo "export ${WEBAPP_NAME}_CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}" >> "${ENV_FILE}"
+
+ENV_FILE_ABSOLUTE=$(realpath ${ENV_FILE})
+echo "Environment file writen to ${ENV_FILE_ABSOLUTE}"
+
+if [[ -z "$@" ]]; then
+    ${SHELL}
+else
+    "$@"
+fi
