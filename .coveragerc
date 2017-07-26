@@ -1,0 +1,7 @@
+[run]
+branch = True
+parallel = True
+source = webapp
+
+[report]
+show_missing = True
