@@ -1,6 +1,5 @@
 from celery import signals
 from webapp import nicer_logging
-from webapp import settings
 from webapp.ids import generate_id
 from webapp.implementation.utils import get_celery_config
 from webapp.logging_configuration import configure_celery_logging
