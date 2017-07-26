@@ -13,5 +13,5 @@ LOG = nicer_logging.getLogger(__name__)
 
 @app.task()
 def do_work(numerator=None, denominator=None, wallclock_time=None):
-    time.sleep(wallclock_time) #  pretend we're doing something really hard
-    return numerator/denominator
+    time.sleep(wallclock_time)  # pretend we're doing something really hard
+    return numerator / denominator
