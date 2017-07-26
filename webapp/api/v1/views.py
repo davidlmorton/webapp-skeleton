@@ -1,10 +1,8 @@
 from flask import g, request
 from flask_restful import Resource
 from webapp import nicer_logging
-from webapp import settings
 from webapp.api import view_wrappers
 from webapp.nicer_logging import getLogger
-from webapp.urls import url_for
 
 LOG = getLogger(__name__)
 
