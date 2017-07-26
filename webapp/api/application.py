@@ -1,5 +1,4 @@
 from webapp import nicer_logging
-from webapp import settings
 from webapp.api import v1
 from webapp.api.json_encoder import DateTimeEncoder
 from webapp.ids import generate_id
