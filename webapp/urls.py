@@ -1,6 +1,5 @@
 from webapp import settings
 from pprint import pformat
-import re
 import string
 
 
