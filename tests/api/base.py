@@ -1,7 +1,6 @@
 from pprint import pprint
 import abc
 import json
-import os
 import requests
 import unittest
 
