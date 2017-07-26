@@ -1,10 +1,21 @@
 from pprint import pprint
+from webapp.api.wsgi import app
 import abc
 import json
 import requests
 import unittest
 
 __all__ = ['BaseAPITest']
+
+
+def get_endpoint_name(url):
+    with app.test_request_context(url) as request_ctx:
+        url_rule = request_ctx.request.url_rule
+
+    if url_rule is None:
+        return 'Unknown Endpoint'
+    else:
+        return url_rule.endpoint.split('.')[-1]
 
 
 class BaseAPITest(unittest.TestCase):
