@@ -1,6 +1,7 @@
 from webapp.exceptions import NoSuchEntityError
 from webapp.implementation.server_info import get_server_info
 from webapp.nicer_logging import getLogger
+from redis import exceptions as redis_exceptions
 
 LOG = getLogger(__name__)
 
@@ -63,9 +64,20 @@ class Backend:
         async_result = self.do_work_task.delay(**celery_params)
         return {'id': async_result.id}
 
-    def get_work_tasks(self):
+    def get_work_tasks(self, retries=3):
         inspector = self.celery_app.control.inspect()
         results = []
+
+        try:
+            # After extended inactivity, the connection pool that the inspector
+            # uses goes stale and isn't refreshed, so we have to employ retries
+            active_tasks = inspector.active()
+        except redis_exceptions.ConnectionError:
+            if retries > 0:
+                return self.get_work_tasks(retries=retries - 1)
+            else:
+                raise
+
         for task_list in inspector.active().values():
             results.extend([{'task_status': 'active', **task}
                 for task in task_list])
