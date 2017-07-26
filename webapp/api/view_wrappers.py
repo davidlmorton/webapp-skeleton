@@ -1,6 +1,7 @@
 from flask import request
 from functools import wraps
 from pprint import pformat
+from webapp.exceptions import NoSuchEntityError
 
 
 def query_string_args(logger, allowed=None, required=None):
@@ -29,5 +30,18 @@ def query_string_args(logger, allowed=None, required=None):
                         pformat(missing_keys)}, 400
 
             return f(*args, **kwargs)
+        return decorated
+    return decorator
+
+
+def handles_no_such_entity_error(logger):
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            try:
+                result = f(*args, **kwargs)
+            except NoSuchEntityError as e:
+                return {'error': e.message}, 404
+            return result
         return decorated
     return decorator

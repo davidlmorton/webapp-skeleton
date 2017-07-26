@@ -11,6 +11,14 @@ ENDPOINT_INFO = {
                 'url': '/status',
                 'format': '/status',
             },
+            'JobList': {
+                'url': '/jobs',
+                'format': '/jobs',
+            },
+            'JobDetail': {
+                'url': '/jobs/<job_id>',
+                'format': '/jobs/{job_id:s}',
+            },
         },
 }
 
