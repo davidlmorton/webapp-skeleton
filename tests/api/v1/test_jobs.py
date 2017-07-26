@@ -19,7 +19,8 @@ class TestJobs(BaseAPITest):
             url = urls.url_for('v1', 'JobDetail', job_id=job_id)
             response = self.get(url)
             self.assertEqual(200, response.status_code)
-            self.assertEqual(response.DATA['result_status'], 'PENDING')
+            self.assertTrue(response.DATA['result_status'] in
+                    ('PENDING', 'STARTED'))
 
         with self.subTest('get missing'):
             url = urls.url_for('v1', 'JobDetail',
