@@ -1,6 +1,3 @@
-from webapp import settings
-from webapp.urls import url_for
-from flask import g, request
 from functools import wraps
 from pprint import pformat
 
