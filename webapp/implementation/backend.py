@@ -36,14 +36,15 @@ class Backend:
         if async_result_status == 'PENDING':
             inspector = self.celery_app.control.inspect()
             tasks_per_worker = inspector.query_task(task_uuid)
-            for task_dict in tasks_per_worker.values():
-                if task_uuid in task_dict:
-                    status, task_info = task_dict[task_uuid]
-                    return {
-                        'result_status': async_result_status,
-                        'task_status': status,
-                        **task_info,
-                    }
+            if tasks_per_worker is not None:
+                for task_dict in tasks_per_worker.values():
+                    if task_uuid in task_dict:
+                        status, task_info = task_dict[task_uuid]
+                        return {
+                            'result_status': async_result_status,
+                            'task_status': status,
+                            **task_info,
+                        }
             raise NoSuchEntityError("No job with id (%s) could be found" %
                     task_uuid)
         else:
