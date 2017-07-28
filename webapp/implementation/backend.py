@@ -78,14 +78,23 @@ class Backend:
             else:
                 raise
 
-        for task_list in inspector.active().values():
-            results.extend([{'task_status': 'active', **task}
-                for task in task_list])
-        for task_list in inspector.reserved().values():
-            results.extend([{'task_status': 'reserved', **task}
-                for task in task_list])
-        for task_list in inspector.scheduled().values():
-            results.extend([{'task_status': 'scheduled', **task}
-                for task in task_list])
+        active = inspector.active()
+        if active is not None:
+            for task_list in active.values():
+                results.extend([{'task_status': 'active', **task}
+                    for task in task_list])
+
+        reserved = inspector.reserved()
+        if reserved is not None:
+            for task_list in reserved.values():
+                results.extend([{'task_status': 'reserved', **task}
+                    for task in task_list])
+
+        scheduled = inspector.scheduled()
+        if scheduled is not None:
+            for task_list in scheduled.values():
+                results.extend([{'task_status': 'scheduled', **task}
+                    for task in task_list])
+
         return {'total': len(results),
                 'results': results}
