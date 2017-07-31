@@ -1,7 +1,6 @@
 from webapp.exceptions import NoSuchEntityError
 from webapp.implementation.server_info import get_server_info
 from webapp.nicer_logging import getLogger
-from redis import exceptions as redis_exceptions
 
 LOG = getLogger(__name__)
 
