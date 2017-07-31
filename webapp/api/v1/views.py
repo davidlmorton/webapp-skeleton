@@ -30,11 +30,6 @@ class Status(Resource):
 class JobList(Resource):
     @logged_response(endpoint_name='JobList')
     @query_string_args()
-    def get(self):
-        return g.backend.get_work_tasks(), 200
-
-    @logged_response(endpoint_name='JobList')
-    @query_string_args()
     def post(self):
         body = request.json
         return g.backend.do_work(**body), 201

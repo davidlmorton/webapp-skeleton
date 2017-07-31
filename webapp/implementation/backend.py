@@ -64,38 +64,3 @@ class Backend:
                        'webapp.celery_task': 'worker.do_work'})
         async_result = self.do_work_task.delay(**celery_params)
         return {'id': async_result.id}
-
-    def get_work_tasks(self, retries=3):
-        inspector = self.celery_app.control.inspect()
-        results = []
-
-        try:
-            # After extended inactivity, the connection pool that the inspector
-            # uses goes stale and isn't refreshed, so we have to employ retries
-            active_tasks = inspector.active()
-        except redis_exceptions.ConnectionError:
-            if retries > 0:
-                return self.get_work_tasks(retries=retries - 1)
-            else:
-                raise
-
-        active = inspector.active()
-        if active is not None:
-            for task_list in active.values():
-                results.extend([{'task_status': 'active', **task}
-                    for task in task_list])
-
-        reserved = inspector.reserved()
-        if reserved is not None:
-            for task_list in reserved.values():
-                results.extend([{'task_status': 'reserved', **task}
-                    for task in task_list])
-
-        scheduled = inspector.scheduled()
-        if scheduled is not None:
-            for task_list in scheduled.values():
-                results.extend([{'task_status': 'scheduled', **task}
-                    for task in task_list])
-
-        return {'total': len(results),
-                'results': results}

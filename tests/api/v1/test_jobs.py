@@ -28,17 +28,6 @@ class TestJobs(BaseAPITest):
             response = self.get(url)
             self.assertEqual(404, response.status_code)
 
-        with self.subTest('list get'):
-            url = urls.url_for('v1', 'JobList')
-            response = self.get(url)
-            self.assertEqual(200, response.status_code)
-
-            found = False
-            for result in response.DATA['results']:
-                if result['id'] == job_id:
-                    found = True
-            self.assertTrue(found)
-
         with self.subTest('get result'):
             url = urls.url_for('v1', 'JobDetail', job_id=job_id)
             for sleep_time in (3, 1, 1, 1, 1, 1):
